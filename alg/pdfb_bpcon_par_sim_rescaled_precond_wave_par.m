@@ -468,7 +468,6 @@ for t = 1:param.max_iter
         end
 
         reweight_alpha = reweight_alpha_ff * reweight_alpha;
-        sigma1(:) = 1/op_norm_wave_par(weights, Psit, Psi, [Ny, Nx], 1e-8, 200, 0, P);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
         
@@ -550,7 +549,7 @@ function [v1_, u1_, norm1_] = run_par_waverec(v1_, Psit, Psi, prev_xsol, gamma, 
     T = (gamma  / sigma1_) * weights_;
     vy1_ = z - sign(z) .* max(abs(z)-T, 0);
     v1_ = vy1_;
-    u1_ = Psi(weights_ .* v1_);
+    u1_ = Psi(v1_);
 
     % local L1 norm of current solution
     norm1_ = sum(abs(r1_));
