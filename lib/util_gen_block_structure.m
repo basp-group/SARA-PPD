@@ -1,7 +1,7 @@
 function [u, v, Nm, uvidx, aW, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param)
 
 Nm = length(uw);
-
+try
 if param.use_manual_frequency_partitioning
     %% frequency clustering
 
@@ -27,6 +27,8 @@ if param.use_manual_frequency_partitioning
     end
 end
 
+catch
+
 if param.use_manual_partitioning
     %% data clustering
 
@@ -44,7 +46,9 @@ if param.use_manual_partitioning
         Rp = Rp + param.partition(q);
     end
 end
+end
 
+try
 if param.use_uniform_partitioning
     pno = param.uniform_partitioning_no;
     
@@ -78,6 +82,8 @@ if param.use_uniform_partitioning
     end
 end
 
+catch
+
 if param.use_equal_partitioning
     pno = param.equal_partitioning_no;
     fpno = util_divisor(pno);
@@ -109,7 +115,9 @@ if param.use_equal_partitioning
         end
     end
 end
+end
 
+try
 if param.use_density_partitioning
     pno = param.density_partitioning_no;
     
@@ -131,6 +139,8 @@ if param.use_density_partitioning
         Rp = Rp + Np(q);
     end
 end
+end
+
 
 aW = cell(pno, 1);
 for k = 1:pno
