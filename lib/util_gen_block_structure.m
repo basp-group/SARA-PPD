@@ -1,7 +1,13 @@
 function [u, v, Nm, uvidx, aW, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param)
 
+if ~isfield(param, 'use_manual_frequency_partitioning'),  param.use_manual_frequency_partitioning = 0; end
+if ~isfield(param, 'use_uniform_partitioning'),  param.use_uniform_partitioning = 0; end
+if ~isfield(param, 'use_equal_partitioning'),  param.use_equal_partitioning = 0; end
+if ~isfield(param, 'use_density_partitioning'),  param.use_density_partitioning =0; end
+if ~isfield(param, 'use_manual_partitioning'),  param.use_manual_partitioning =0; end
+
 Nm = length(uw);
-try
+
 if param.use_manual_frequency_partitioning
     %% frequency clustering
 
@@ -25,31 +31,8 @@ if param.use_manual_frequency_partitioning
         
         uvidx{q} = uvidxw(indexuv==q);
     end
-end
-
-catch
-
-if param.use_manual_partitioning
-    %% data clustering
-
-    pno = length(param.partition);
-
-    u = cell(pno, 1);
-    v = cell(pno, 1);
-    
-    Rp = 0;
-    for q = 1:pno
-        u{q} = uw(Rp+1:Rp+param.partition(q));
-        v{q} = vw(Rp+1:Rp+param.partition(q));
-        uvidx{q} = Rp+1:Rp+param.partition(q);
-        uvidx{q} = uvidx{q}(:);
-        Rp = Rp + param.partition(q);
-    end
-end
-end
-
-try
-if param.use_uniform_partitioning
+    %%
+elseif param.use_uniform_partitioning
     pno = param.uniform_partitioning_no;
     
     Np = floor(Nm/pno) * ones(pno, 1);
@@ -80,11 +63,9 @@ if param.use_uniform_partitioning
         vw_(indexuv) = [];
         uvidxw(indexuv) = [];
     end
-end
 
-catch
-
-if param.use_equal_partitioning
+    %%
+elseif param.use_equal_partitioning
     pno = param.equal_partitioning_no;
     fpno = util_divisor(pno);
     xno = fpno(find(fpno >= sqrt(pno), 1));
@@ -114,11 +95,9 @@ if param.use_equal_partitioning
             uvidx{xno * (q - 1) + k} = uvidx_(sv == k);
         end
     end
-end
-end
 
-try
-if param.use_density_partitioning
+     %%
+elseif param.use_density_partitioning
     pno = param.density_partitioning_no;
     
     Np = floor(Nm/pno) * ones(pno, 1);
@@ -139,8 +118,24 @@ if param.use_density_partitioning
         Rp = Rp + Np(q);
     end
 end
-end
 
+if param.use_manual_partitioning
+    %% data clustering
+
+    pno = length(param.partition);
+
+    u = cell(pno, 1);
+    v = cell(pno, 1);
+    
+    Rp = 0;
+    for q = 1:pno
+        u{q} = uw(Rp+1:Rp+param.partition(q));
+        v{q} = vw(Rp+1:Rp+param.partition(q));
+        uvidx{q} = Rp+1:Rp+param.partition(q);
+        uvidx{q} = uvidx{q}(:);
+        Rp = Rp + param.partition(q);
+    end
+end
 
 aW = cell(pno, 1);
 for k = 1:pno
