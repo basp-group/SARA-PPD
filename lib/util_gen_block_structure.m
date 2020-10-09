@@ -27,7 +27,7 @@ if param.use_manual_partitioning
 
 elseif param.use_manual_frequency_partitioning
     %% frequency clustering
-    pno = param.manual_frequency_partitioning_no;
+
     indexu = quantiz(uw, param.fpartition_y);
     indexv = quantiz(vw, param.fpartition_x);
     indexuv = length(param.fpartition_y)*indexu + indexv;
